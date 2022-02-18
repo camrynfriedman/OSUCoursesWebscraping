@@ -22,21 +22,30 @@ class Scraper
     # Taking page_num as input, and store the result in courses
     def store_courses_page(page_num)
         agent = Mechanize.new       # Instantiate a Mechanize object
-        html_data = agent.get(uri=@url, query={"q": "cse", "campus": "col_mrn_nwk_lma", "term": "1224", "p": page_num})
+        html_data = agent.get(uri=@url, query={"q": "cse", "campus": "col_mrn_nwk_lma", "term": "1224", "p": page_num}) 
+        if (html_data != nil)
+     
         # Parse to ruby interpretable data structure
         @json_data = JSON.parse html_data.body
+          puts "#{json_data}"
         # Save to courses instance
         @courses[page_num] = json_data["data"]['courses']
+        else
+        continue = false
+        end
+        
     end
 
+	
     # Collecting the useful information about each courses in page_num
     def get_course_info(page_num)
+ 
         @courses[page_num].each do |item| # for each things in things do something while storing that things in the variable item
             # print "#{item}"
             @terms << item["course"]["term"]
             @title << item["course"]["title"]
             @subject_catalogNumber << item["course"]["subject"] + item["course"]["catalogNumber"]
-        end
+            end
     end
 
     def pretty_print(page_num)
@@ -47,13 +56,7 @@ class Scraper
 		end
 	end 
 
+
 end
 
-# Some example how to use it!
-scraper = Scraper.new
-scraper.store_courses_page(1)
-scraper.get_course_info(1)
-puts scraper.terms[0]   # Expected ==> Summer 2022
-puts scraper.title[0]   # Expected ==> Modeling and Problem Solving with Spreadsheets and Databases
-puts scraper.subject_catalogNumber[0]   # Expected ==> CSE2111
-scraper.pretty_print(1)
+
