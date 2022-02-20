@@ -1,12 +1,15 @@
 require_relative 'scraper2.rb'
 
 puts "Welcome to the CSE course search!"
-puts "You can search by course number, course name, description, prerequisites, instructor name, and course credit hours"
-#maybe put an example of what each of these would be, i think there is some ambiguity
+puts "You can search by course number, course name, description, instructor name, and course credit hours"
+puts "Enter 1 for the course number (i.e. 'MATH2568')"
+puts "Enter 2 for the course name (i.e. 'Linear Algebra')"
+puts "Enter 3 to search for a word in the description (i.e. 'prerequisites')"
+puts "Enter 4 to search for an instructors name"
+puts "Enter 5 to search for course credit hours"
+
 puts "\nPlease enter a field to search by: "
-fieldName = gets
-puts "\nPlease enter what you would like to search in " + fieldName
-user_input = gets
+fieldName = gets.to_i
 
 scraper = Scraper.new
 totalPages = scraper.store_all_courses_page()
@@ -15,11 +18,11 @@ for i in 1..totalPages
     scraper.get_course_info(i)
 end
 
-#this doesn't work idk why probably something dumb
-
-if(fieldName.chomp == "course name")
+if(fieldName == 1)
+    puts "\nPlease enter what course number you would like to search for: "
+    user_input = gets
     scraper.courseCatalog.each do |x|
-        if user_input.chomp == x.subCat #need to fix this condition
+        if user_input.chomp == x.subCat
             puts
             puts
             puts x.subCat
