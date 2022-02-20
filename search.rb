@@ -1,4 +1,4 @@
-require_relative 'scraper.rb'
+require_relative 'scraper2.rb'
 
 puts "Welcome to the CSE course search!"
 puts "You can search by course number, course name, description, prerequisites, instructor name, and course credit hours"
@@ -9,11 +9,19 @@ puts "\nPlease enter what you would like to search in " + fieldName
 user_input = gets
 
 scraper = Scraper.new
+totalPages = scraper.store_all_courses_page()
+
+for i in 1..totalPages
+    scraper.get_course_info(i)
+end
 
 #this doesn't work idk why probably something dumb
-if(fieldName == "course name")
-    for x in scraper.courseCatalog
-        if x.subCat == user_input 
+
+if(fieldName.chomp == "course name")
+    scraper.courseCatalog.each do |x|
+        if user_input.chomp == x.subCat #need to fix this condition
+            puts
+            puts
             puts x.subCat
             puts x.title
             puts x.description
