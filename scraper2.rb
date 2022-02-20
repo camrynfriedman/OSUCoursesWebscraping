@@ -101,31 +101,31 @@ class Scraper
 end
 
 # Some example how to use it!
-scraper = Scraper.new
-totalPages = scraper.store_all_courses_page()
-File.write('.course-data.json', JSON.dump(scraper.coursePages))
+#scraper = Scraper.new
+#totalPages = scraper.store_all_courses_page()
+#File.write('.course-data.json', JSON.dump(scraper.coursePages))
 
 #file = File.read('./course-data.json')
 #scraper.coursePages = JSON.parse(file)
 
 
-for i in 1..totalPages
-    scraper.get_course_info(i)
-end
+#for i in 1..totalPages
+#    scraper.get_course_info(i)
+#end
 
 
-scraper.courseCatalog.each do |item|
-    puts item.subCat
-    puts item.title
-    puts item.description
-    print "Instructors: #{item.teachers}\n"
-    print item.minCH
-    if item.minCH != item.maxCH
-        print "-#{item.maxCH}"
-    end
-    puts
-    puts
-end
+#scraper.courseCatalog.each do |item|
+#    puts item.subCat
+#    puts item.title
+#    puts item.description
+#    print "Instructors: #{item.teachers}\n"
+#    print item.minCH
+#    if item.minCH != item.maxCH
+#        print "-#{item.maxCH}"
+#    end
+#    puts
+#    puts
+#end
 
 
 
