@@ -56,7 +56,7 @@ if(fieldName == 1)
 
         end
     end
-    
+
 #course name
 elsif(fieldName == 2)
     puts "\nPlease enter what course title you would like to search for (i.e. 'Linear Algebra'): "
@@ -89,17 +89,28 @@ elsif(fieldName == 3)
 elsif(fieldName == 4)
     puts "\nPlease enter the instructor's full name: "
     user_input = gets.chomp
-    user_input = user_input.upcase
+    #tokenize and capitalize user input
+    tokenized_user_input = user_input.upcase.split
     puts "\n\nSearch Results:"
     scraper.courseCatalog.each do |x|
         ##CHANGE TO MAYBE JUST PRINT OUT THE SECTION THAT THE INSTRUCTOR IS TEACHING AND ITS INFO?
         #TODO - take into account that some professors have their entire name (i.e. Adam Russell Grupa) listed so if
         #someone tries to search "Adam Grupa" and finds nothing because they didn't type in "Adam Russell Grupa"
         #potential fix: tokenize the user input and search through all the instructors using the tokens? anno
-        if x.teachers.map(&:upcase).include? (user_input)
-            print_values(x)
-            count += 1
+
+        #teachers_uppercase = x.teachers.map(&:upcase)
+        i=0
+
+        while i<x.teachers.length
+            name = teachers[i].upcase.split
+            if name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
+                print_values(x)
+                count++
+            end
+            i++
         end
+
+
     end
 
 #credit hours
