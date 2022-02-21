@@ -44,7 +44,7 @@ end
 count = 0 #to keep track of how many results show up after the search. also helpful for printing error message
 
 #course number
-if(fieldName == 1)
+if fieldName == 1
     puts "\nPlease enter what course you would like to search for by providing the name and number with no spaces (i.e. MATH2568): "
     user_input = gets
     user_input = user_input.upcase
@@ -58,7 +58,7 @@ if(fieldName == 1)
     end
 
 #course name
-elsif(fieldName == 2)
+elsif fieldName == 2
     puts "\nPlease enter what course title you would like to search for (i.e. 'Linear Algebra'): "
     user_input = gets.chomp
     user_input = user_input.upcase
@@ -71,7 +71,7 @@ elsif(fieldName == 2)
     end
 
 #description
-elsif(fieldName == 3)
+elsif fieldName == 3
     puts "\nPlease enter a keyword(s) from the course description (i.e. 'Prereq'): "
     user_input = gets.chomp
     user_input = user_input.upcase
@@ -93,23 +93,18 @@ elsif(fieldName == 4)
     tokenized_user_input = user_input.upcase.split
     puts "\n\nSearch Results:"
     scraper.courseCatalog.each do |x|
-        ##CHANGE TO MAYBE JUST PRINT OUT THE SECTION THAT THE INSTRUCTOR IS TEACHING AND ITS INFO?
         #TODO - take into account that some professors have their entire name (i.e. Adam Russell Grupa) listed so if
         #someone tries to search "Adam Grupa" and finds nothing because they didn't type in "Adam Russell Grupa"
-        #potential fix: tokenize the user input and search through all the instructors using the tokens? anno
-
         #teachers_uppercase = x.teachers.map(&:upcase)
         i=0
-
         while i<x.teachers.length
-            name = teachers[i].upcase.split
+            name = x.teachers[i].upcase.split
             if name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
                 print_values(x)
-                count++
+                count+=1
             end
-            i++
+            i+=1
         end
-
 
     end
 
