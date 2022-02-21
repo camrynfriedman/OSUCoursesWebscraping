@@ -1,4 +1,4 @@
-require_relative 'scraper2.rb'; nil
+require_relative 'scraper2.rb'
 
 #used to print information about each course
 def print_values(x)
