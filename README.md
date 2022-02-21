@@ -1,1 +1,2 @@
 # team2-webscraping
+To run the CSE course page navigator, type "ruby search.rb" into a terminal window and follow the instructions provided. Information about the course will be printed out including its number, name, description, instructors, and credit hours. The total number of results will also be displayed at the end of the search results.

@@ -14,7 +14,6 @@ class Course
 end
 
 class Scraper
-	# An scraper object that has 
 	attr_accessor :url, :coursePages, :courseCatalog
 
 	# Created, immplemented, tested on 02/29/2022 by Yifan Zhou
@@ -28,17 +27,6 @@ class Scraper
         # menu_html = Nokogiri::HTML(menu['panels'][0]['html'])
         # course_content = json_data["data"]['courses'][0]["course"]["term"]
 	end
-
-    #Should be unnecessary now but just in case we need it
-    # Taking page_num as input, and store the result in courses
-    #def store_courses_page(page_num)
-        #agent = Mechanize.new       # Instantiate a Mechanize object
-        #html_data = agent.get(uri=@url, query={"q": "cse", "campus": "col", "term": "1224", "p": page_num})
-        ## Parse to ruby interpretable data structure
-        #json_data = JSON.parse html_data.body
-        ## Save to courses instance
-        #@coursePages[page_num] = json_data["data"]['courses']
-    #end
 
     # Taking page_num as input, and store the result in courses
     def store_all_courses_page()
@@ -54,6 +42,7 @@ class Scraper
         totalPages = json_data["data"]["totalPages"]
         # Store current page data
         @coursePages[page_num] = json_data["data"]['courses']
+        get_course_info(page_num)
 
         while json_data["data"]["nextPageLink"] != nil
             page_num += 1
@@ -62,6 +51,7 @@ class Scraper
             html_data = agent.get(@url + json_data["data"]["nextPageLink"])
             json_data = JSON.parse html_data.body
             @coursePages[page_num] = json_data["data"]['courses']
+            get_course_info(page_num)
         end
 
         puts "===> Finished scraping!"
@@ -79,14 +69,31 @@ class Scraper
             newTeachArray = []
             newMaxCH = item["course"]["maxUnits"]
             newMinCH = item["course"]["minUnits"]
-
             item["sections"].each do |section|
                 if !(newTeachArray.include? section["meetings"][0]["instructors"][0]["displayName"]) && (section["meetings"][0]["instructors"][0]["displayName"] != nil)
                     newTeachArray << section["meetings"][0]["instructors"][0]["displayName"]
                 end
             end 
-
-            @courseCatalog << Course.new(newTitle, newSubCat, newDesc, newTeachArray, newMaxCH, newMinCH)
+            courseDoesntExist = true
+            @courseCatalog.each do |existing|
+                if courseDoesntExist && existing.subCat == newSubCat
+                    courseDoesntExist = false
+                    newTeachArray.each do |newT|
+                        teachDoesntExist = true
+                        existing.teachers.each do |oldT|
+                            if teachDoesntExist && oldT == newT
+                                teachDoesntExist = false
+                            end
+                        end
+                        if teachDoesntExist
+                            existing.teachers << newT
+                        end
+                    end
+                end
+            end
+            if courseDoesntExist
+                @courseCatalog << Course.new(newTitle, newSubCat, newDesc, newTeachArray, newMaxCH, newMinCH)
+            end
         end
     end
 
@@ -100,6 +107,7 @@ class Scraper
 
 end
 
+<<<<<<< HEAD
 # Some example how to use it!
 #scraper = Scraper.new
 #totalPages = scraper.store_all_courses_page()
@@ -134,3 +142,5 @@ end
 
 #File.write('./finalFile.json', JSON.dump(scraper.coursePages))
 #puts "write finished\n\n\n"
+=======
+>>>>>>> e9717fb838b1c781c88717baaccc928d287f60c8
