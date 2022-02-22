@@ -184,43 +184,52 @@ def advancedSearch
 #continue = true
 #while (continue)
     puts "\n"
-    options_menu
     answer = @scraper.courseCatalog
-    puts "Please enter the field values you would like to search by based on the field values printed above"
-    puts "For example, if you want to find the courses by instructor AND credit hours type '4 5' with a space between the numbers!"
+    puts "Please enter the field values you would like to search by based on the field values"
+    puts "Valid field values are course name (1), description (2), instructor name (3) and credit hours (4)"
+    puts "For example, if you want to find the courses by instructor AND credit hours type '3 4' with a space between the numbers!"
 
     newField = gets.to_s #string input to split later
 
+    #to validate data
+    #while newField DOES NOT include "1, 2, 3, 4"
 
-    if(newField.split.include?("4"))
+
+    if(newField.split.include?("3"))
         arr = []
-        puts "\nPlease enter the instructor's full name: "
+        puts "\nPlease enter the instructor's FULL name: "
         user_input = gets.chomp
         #tokenize and capitalize user input
         tokenized_user_input = user_input.upcase.split
 
-        i=0
-        count = 0
-        @scraper.courseCatalog.each do |x|
+        answer.each do |x|
+            i = 0
+            count = 0
             while i<x.teachers.length
                 name = x.teachers[i].upcase.split
                 
-                if name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
+                #incrementing count if it exists in the array of teachers for the x course object
+                if name[0] == tokenized_user_input[0] and name[name.length-1] == tokenized_user_input[tokenized_user_input.length-1]
+                #if x.teachers[i].include?(user_input)
                     count += 1
                 end
 
                 i+=1
             end
+
+            #if the count is still 0 arr gets added
             if count == 0
                 arr<<x
             end
         end
 
-        @answer = (@answer - arr)
+        #removes the array from the course catalog
+        answer = (answer - arr)
         
     end
 
-    
+    #course number will only ever return ONE value, there is no reason to include it in the advanced search
+=begin
     if(newField.split.include?("1"))
         arr = []
         puts "\nPlease enter what course you would like to search for by providing the name and number with no spaces (i.e. MATH2568): "
@@ -236,28 +245,29 @@ def advancedSearch
         end
         @answer = (@answer - arr)
     end
-    
-    if(newField.split.include?("2"))
+=end
+
+    if(newField.split.include?("1"))
         arr = []
         puts "\nPlease enter what course title you would like to search for (i.e. 'Linear Algebra'): "
         user_input = gets.chomp
         user_input = user_input.upcase
         
-        @scraper.courseCatalog.each do |x|
+        answer.each do |x|
             if !x.title.upcase.include?(user_input) 
                 arr << x #adding x to an array
             end
         end
-        @answer = (@answer - arr)
+        answer = (answer - arr)
     end
     
-    if(newField.split.include?("3"))
+    if(newField.split.include?("2"))
         arr = []
         puts "\nPlease enter a keyword(s) from the course description (i.e. 'Prereq'): "
         user_input = gets.chomp
         user_input = user_input.upcase
         
-        @scraper.courseCatalog.each do |x|
+        answer.each do |x|
             unless x.description.nil?
                 if !x.description.upcase.include?(user_input)
                     arr << x #adding x to an array
@@ -267,22 +277,22 @@ def advancedSearch
                 arr << x
             end
         end
-        @answer = (@answer - arr)
+        answer = (answer - arr)
     end
     
     
     
-    if(newField.split.include?("5"))
+    if(newField.split.include?("4"))
         arr = []
         puts "\nPlease enter the number of credit hours you are looking for: "
         user_input = gets.to_i
         
-        @scraper.courseCatalog.each do |x|
+        answer.each do |x|
             if x.minCH != user_input and x.maxCH != user_input
                 arr << x
             end
         end
-        @answer = (@answer - arr)
+        answer = (answer - arr)
         
     end
     
@@ -290,10 +300,10 @@ def advancedSearch
     #since theoretically we removed all of the cases that DIDN'T match the criteria
     puts "\n\nSearch Results:"
     #print values of array
-    @answer.each do |y|
+    answer.each do |y|
         print_values(y)
     end
-    countResults(@answer.length)
+    countResults(answer.length)
 end
 
 #commenting out Ben's format for now
