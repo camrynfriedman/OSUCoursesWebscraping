@@ -64,13 +64,13 @@ def basicSearch
     options_menu
     print "Enter an option: "
     fieldName = gets.to_i
-   while (fieldName != 1 && fieldName != 2 && fieldName != 3 && fieldName != 4 && fieldName != 5)
-    print "\nPlease enter a valid option (1-5): "
-    fieldName = gets.to_i
+    while (!fieldName.between?(1,5))
+        print "\nPlease enter a valid option (1-5): "
+        fieldName = gets.to_i
     end
     #course number
     if fieldName == 1
-   	courseNumBasic
+   	    courseNumBasic
     #course name
     elsif fieldName == 2
     	courseNameBasic
@@ -79,10 +79,10 @@ def basicSearch
     	descriptionBasic
     #instructor
     elsif(fieldName == 4)
-   	instrNameBasic
+   	    instrNameBasic
     #credit hours
     elsif(fieldName == 5)
-	creditBasic
+	    creditBasic
     end
 end
 
@@ -150,7 +150,7 @@ count = 0
             i=0
             while i<x.teachers.length
                 name = x.teachers[i].upcase.split
-                if !name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
+                if name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
                     print_values(x)
                     count+=1
                 end
@@ -181,13 +181,126 @@ end
 def advancedSearch
     courseNum, courseName, descriptor, instrName, creditHrs = nil, nil, nil, nil, nil
     @answer = @scraper.courseCatalog
-continue = true
-while (continue)
-puts "\n"
-options_menu
+#continue = true
+#while (continue)
+    puts "\n"
+    options_menu
+    answer = @scraper.courseCatalog
+    puts "Please enter the field values you would like to search by based on the field values printed above"
+    puts "For example, if you want to find the courses by instructor AND credit hours type '4 5' with a space between the numbers!"
 
+    newField = gets.to_s #string input to split later
+
+
+    if(newField.split.include?("4"))
+        arr = []
+        puts "\nPlease enter the instructor's full name: "
+        user_input = gets.chomp
+        #tokenize and capitalize user input
+        tokenized_user_input = user_input.upcase.split
+
+        i=0
+        count = 0
+        @scraper.courseCatalog.each do |x|
+            while i<x.teachers.length
+                name = x.teachers[i].upcase.split
+                
+                if name.include? (tokenized_user_input[0] and tokenized_user_input[tokenized_user_input.length-1])
+                    count += 1
+                end
+
+                i+=1
+            end
+            if count == 0
+                arr<<x
+            end
+        end
+
+        @answer = (@answer - arr)
+        
+    end
+
+    
+    if(newField.split.include?("1"))
+        arr = []
+        puts "\nPlease enter what course you would like to search for by providing the name and number with no spaces (i.e. MATH2568): "
+        user_input = gets
+        user_input = user_input.upcase
+        
+        @scraper.courseCatalog.each do |x| #x is a course object
+            #we want to remove all the instances where they DON'T match
+            #from the course catalog
+            if user_input.chomp != x.subCat 
+                arr << x #adding x to an array
+            end
+        end
+        @answer = (@answer - arr)
+    end
+    
+    if(newField.split.include?("2"))
+        arr = []
+        puts "\nPlease enter what course title you would like to search for (i.e. 'Linear Algebra'): "
+        user_input = gets.chomp
+        user_input = user_input.upcase
+        
+        @scraper.courseCatalog.each do |x|
+            if !x.title.upcase.include?(user_input) 
+                arr << x #adding x to an array
+            end
+        end
+        @answer = (@answer - arr)
+    end
+    
+    if(newField.split.include?("3"))
+        arr = []
+        puts "\nPlease enter a keyword(s) from the course description (i.e. 'Prereq'): "
+        user_input = gets.chomp
+        user_input = user_input.upcase
+        
+        @scraper.courseCatalog.each do |x|
+            unless x.description.nil?
+                if !x.description.upcase.include?(user_input)
+                    arr << x #adding x to an array
+                end
+            end
+            if x.description.nil?
+                arr << x
+            end
+        end
+        @answer = (@answer - arr)
+    end
+    
+    
+    
+    if(newField.split.include?("5"))
+        arr = []
+        puts "\nPlease enter the number of credit hours you are looking for: "
+        user_input = gets.to_i
+        
+        @scraper.courseCatalog.each do |x|
+            if x.minCH != user_input and x.maxCH != user_input
+                arr << x
+            end
+        end
+        @answer = (@answer - arr)
+        
+    end
+    
+    #answer should now only be left with what matches all the criteria
+    #since theoretically we removed all of the cases that DIDN'T match the criteria
+    puts "\n\nSearch Results:"
+    #print values of array
+    @answer.each do |y|
+        print_values(y)
+    end
+    countResults(@answer.length)
+end
+
+#commenting out Ben's format for now
+=begin
 print "\nPlease enter a field to search by or type 'exit' for results: "
 fieldName = gets.chomp
+
 
 while (fieldName != "1" && fieldName != "2" && fieldName != "3" && fieldName != "4" && fieldName != "5" && fieldName != "exit")
     print "\nPlease enter a valid option (1-5 or exit): "
@@ -214,11 +327,15 @@ end
 
 end
 
+#searching by course name is effectively useless in an advanced search where you are looking for courses with overlapping characteristics
+#this search will only ever give you ONE output bc it is so specific
+
+=begin
 if (courseNum != nil)
         arr = []       
         @answer.each do |x| #x is a course object
             #we want to remove all the instances where they DON'T match
-            from the course catalog
+            #from the course catalog
             if courseNum.chomp != x.subCat 
                 arr << x #adding x to an array
             end
@@ -226,6 +343,8 @@ if (courseNum != nil)
          @answer = (@answer - arr)   
 
 end
+
+
 if (courseName != nil)
        arr = []
        @answer.each do |x|
@@ -253,7 +372,7 @@ end
 if (instrName != nil)
 
         arr = []
-  #tokenize and capitalize user input
+        #tokenize and capitalize user input
         tokenized_user_input = instrName.upcase.split
 
         @answer.each do |x|
@@ -358,7 +477,7 @@ def searchCredit(creditHrs)
 
 end
 
-
+=end
 
 
 
